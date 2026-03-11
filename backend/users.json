@@ -1,0 +1,12 @@
+{
+    "admin@test.com": {
+        "name": "Admin",
+        "email": "admin@test.com",
+        "password": "$2b$12$BLj7M5UKKTNIMhAr2BAR6eHtA4fEnTFwpyCtznYypBH722nMYjzB6"
+    },
+    "r.pattnaik@ilm.com.au": {
+        "name": "Rohan Pattnaik",
+        "email": "r.pattnaik@ilm.com.au",
+        "password": "$2b$12$R5z48wFfPPIFtjxN1ajN6.pqQgocHlk396srk3yluVaheCb8nduuG"
+    }
+}
