@@ -26,7 +26,9 @@ async def load_company_cache():
             response.raise_for_status()
             data = response.json()
 
-            # Debug: show what the flow returns
+            response.raise_for_status()
+            data = response.json()
+
             print(f"[CompanySearch] Flow response type: {type(data)}")
             if isinstance(data, dict):
                 print(f"[CompanySearch] Response keys: {list(data.keys())}")
@@ -66,6 +68,7 @@ async def load_company_cache():
 
             _cache_loaded = True
             print(f"[CompanySearch] Loaded {len(_company_cache)} company names into cache")
+
 
     except Exception as e:
         print(f"[CompanySearch] Failed to load company cache: {e}")

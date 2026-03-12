@@ -1,10 +1,16 @@
 import httpx
-from config import FLOW2_URL
+import xml.etree.ElementTree as ET
+import io
+from config import CARGOWISE_URL
 
 
 async def submit_form(form_data: dict) -> dict:
-    """Submit form data to Power Automate Flow 2 (SalesFormAutomation_NormalFlow)."""
-    payload = {
+    """Submit form data as XML to CargoWise eAdaptor endpoint."""
+    
+    # Create XML structure
+    root = ET.Element("SalesCallRecord")
+    
+    mapping = {
         "ClientName": form_data.get("clientName", ""),
         "Subject": form_data.get("subject", ""),
         "Method": form_data.get("method", ""),
@@ -16,13 +22,37 @@ async def submit_form(form_data: dict) -> dict:
         "Notes": form_data.get("notes", ""),
         "SubmittedBy": form_data.get("submittedBy", ""),
     }
+    
+    for key, value in mapping.items():
+        child = ET.SubElement(root, key)
+        child.text = str(value) if value is not None else ""
+
+    # Convert to string
+    xml_str = ET.tostring(root, encoding='utf-8', xml_declaration=True).decode('utf-8')
+    
+    print(f"[FormSubmit] Sending XML to {CARGOWISE_URL}:\n{xml_str}")
 
     async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.post(FLOW2_URL, json=payload)
-        response.raise_for_status()
-
-        data = response.json()
-        return {
-            "status": data.get("submitStatus", "success"),
-            "message": data.get("message", "Form submitted successfully"),
-        }
+        try:
+            response = await client.post(
+                CARGOWISE_URL, 
+                content=xml_str,
+                headers={"Content-Type": "application/xml"}
+            )
+            response.raise_for_status()
+            
+            # The endpoint might return XML or JSON; we'll check
+            resp_text = response.text
+            print(f"[FormSubmit] Response: {resp_text}")
+            
+            return {
+                "status": "success",
+                "message": "Form submitted successfully to CargoWise",
+                "raw_response": resp_text
+            }
+        except Exception as e:
+            print(f"[FormSubmit] Error during submission: {str(e)}")
+            return {
+                "status": "error",
+                "message": f"Failed to submit to CargoWise: {str(e)}"
+            }

@@ -8,22 +8,32 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
     const [success, setSuccess] = useState(null);
     const [validationErrors, setValidationErrors] = useState(new Set());
     const [searchQuery, setSearchQuery] = useState('');
+    const ignoreNextSearchRef = React.useRef(false);
 
-    // Trigger search dropdown when field is auto-filled (e.g. via Voice or Chat)
+    // Synchronize search dropdown with clientName changes
     React.useEffect(() => {
-        if (autoFilledFields.has('clientName') && formData.clientName) {
-            setSearchQuery(formData.clientName);
+        if (ignoreNextSearchRef.current) {
+            ignoreNextSearchRef.current = false;
+            return;
         }
-    }, [formData.clientName, autoFilledFields]);
+
+        if (formData.clientName && formData.clientName.length >= 2) {
+            setSearchQuery(formData.clientName);
+        } else {
+            setSearchQuery('');
+        }
+    }, [formData.clientName]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        updateField(name, value);
         
         if (name === 'clientName') {
-            setSearchQuery(value);
+            // Typing clears any 'ignored' state
+            ignoreNextSearchRef.current = false;
         }
 
+        updateField(name, value);
+        
         if (validationErrors.has(name)) {
             setValidationErrors((prev) => {
                 const next = new Set(prev);
@@ -108,8 +118,9 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                     <CompanyDropdown
                         searchText={searchQuery}
                         onSelect={(name) => {
+                            ignoreNextSearchRef.current = true;
+                            setSearchQuery('');
                             updateField('clientName', name);
-                            setSearchQuery(''); // Close dropdown after selection
                         }}
                     />
                     {validationErrors.has('clientName') && (
