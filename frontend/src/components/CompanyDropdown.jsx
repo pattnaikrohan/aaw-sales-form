@@ -7,11 +7,13 @@ export default function CompanyDropdown({ searchText, onSelect }) {
     const [isLoading, setIsLoading] = useState(false);
     const [manuallyClosed, setManuallyClosed] = useState(false);
     const debounceRef = useRef(null);
+    const lastSearchRef = useRef('');
 
     useEffect(() => {
-        // Reset manually closed state if text is cleared
-        if (!searchText) {
+        // Reset manually closed state if text changes or is cleared
+        if (searchText !== lastSearchRef.current) {
             setManuallyClosed(false);
+            lastSearchRef.current = searchText;
         }
 
         // Only search if length > 2

@@ -2,6 +2,7 @@ import httpx
 import base64
 from datetime import datetime, timezone, timedelta
 from config import AZURE_FUNCTION_URL, FLOW1_URL
+from services.normalization import normalize_field_value
 
 
 async def process_speech(name: str, content_bytes: str) -> dict:
@@ -47,14 +48,14 @@ async def process_speech(name: str, content_bytes: str) -> dict:
             flow_response.raise_for_status()
         extracted = flow_response.json()
 
-    # Step 3: Return merged result
+    # Step 3: Return merged result with normalized field values
     return {
         "transcript": transcript,
         "clientname": extracted.get("clientName", ""),
         "subject": extracted.get("subject", ""),
-        "method": extracted.get("method", ""),
-        "purpose": extracted.get("purpose", ""),
-        "status": extracted.get("status", ""),
+        "method": normalize_field_value("method", extracted.get("method", "")),
+        "purpose": normalize_field_value("purpose", extracted.get("purpose", "")),
+        "status": normalize_field_value("status", extracted.get("status", "")),
         "primarycontact": extracted.get("primaryContact", ""),
         "actualdate": extracted.get("actualDate", ""),
         "notes": extracted.get("notes", ""),

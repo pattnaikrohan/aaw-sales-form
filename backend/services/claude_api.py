@@ -2,6 +2,7 @@ import json
 import re
 import anthropic
 from config import ANTHROPIC_API_KEY
+from services.normalization import normalize_field_value
 
 SYSTEM_PROMPT = """You are the AAW Sales Assistant. Extract meeting details from the user's messages and fill the sales form.
 Always respond with TWO parts:
@@ -60,8 +61,8 @@ async def send_chat_message(
     if json_match:
         try:
             extracted_fields = json.loads(json_match.group(1))
-            # Remove empty values
-            extracted_fields = {k: v for k, v in extracted_fields.items() if v}
+            # Remove empty values and normalize
+            extracted_fields = {k: normalize_field_value(k, v) for k, v in extracted_fields.items() if v}
         except json.JSONDecodeError:
             pass
 
@@ -121,14 +122,14 @@ async def extract_fields_from_conversation(
     # Try to parse as JSON directly
     try:
         fields = json.loads(response_text)
-        return {k: v for k, v in fields.items() if v}
+        return {k: normalize_field_value(k, v) for k, v in fields.items() if v}
     except json.JSONDecodeError:
         # Fallback: try to find JSON in the response
         json_match = re.search(r"\{.*\}", response_text, re.DOTALL)
         if json_match:
             try:
                 fields = json.loads(json_match.group(0))
-                return {k: v for k, v in fields.items() if v}
+                return {k: normalize_field_value(k, v) for k, v in fields.items() if v}
             except json.JSONDecodeError:
                 pass
     return {}

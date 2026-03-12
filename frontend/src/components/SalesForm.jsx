@@ -7,10 +7,23 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [validationErrors, setValidationErrors] = useState(new Set());
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Trigger search dropdown when field is auto-filled (e.g. via Voice or Chat)
+    React.useEffect(() => {
+        if (autoFilledFields.has('clientName') && formData.clientName) {
+            setSearchQuery(formData.clientName);
+        }
+    }, [formData.clientName, autoFilledFields]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         updateField(name, value);
+        
+        if (name === 'clientName') {
+            setSearchQuery(value);
+        }
+
         if (validationErrors.has(name)) {
             setValidationErrors((prev) => {
                 const next = new Set(prev);
@@ -93,8 +106,11 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                         autoComplete="off"
                     />
                     <CompanyDropdown
-                        searchText={formData.clientName}
-                        onSelect={(name) => updateField('clientName', name)}
+                        searchText={searchQuery}
+                        onSelect={(name) => {
+                            updateField('clientName', name);
+                            setSearchQuery(''); // Close dropdown after selection
+                        }}
                     />
                     {validationErrors.has('clientName') && (
                         <span className="error-message">Client name is required</span>

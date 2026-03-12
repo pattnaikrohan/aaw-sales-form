@@ -12,23 +12,14 @@ import './styles/app.css';
 import aawLogo from './assets/aaw.png';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [isBackendConnected, setIsBackendConnected] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // MSAL hooks to catch redirect returns
+  // MSAL hooks
   const { instance, accounts } = useMsal();
-  const isMsalAuthenticated = useIsAuthenticated();
-
-  useEffect(() => {
-    // If MSAL says we are authenticated (e.g. returning from a redirect), sync the state
-    if (isMsalAuthenticated && accounts.length > 0) {
-      setIsAuthenticated(true);
-      setCurrentUser(accounts[0].name);
-    }
-  }, [isMsalAuthenticated, accounts]);
+  const isAuthenticated = useIsAuthenticated();
+  const currentUser = accounts.length > 0 ? accounts[0].name : 'User';
 
   useEffect(() => {
     if (isDarkMode) {
@@ -58,11 +49,6 @@ export default function App() {
     checkConnection();
   }, []);
 
-  const handleLogin = (userResponse) => {
-    setIsAuthenticated(true);
-    setCurrentUser(userResponse.name);
-  };
-
   const handleLogout = () => {
     // Use MSAL logout redirect so it clears the Microsoft cookie
     instance.logoutRedirect({
@@ -80,7 +66,7 @@ export default function App() {
             <div className="toast warning">⚠️ Backend not connected</div>
           )}
         </div>
-        <AuthPanel onLogin={handleLogin} logoBase64={logoBase64} />
+        <AuthPanel logoBase64={logoBase64} />
       </div>
     );
   }

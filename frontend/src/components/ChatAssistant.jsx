@@ -49,7 +49,13 @@ export default function ChatAssistant({ updateMultipleFields }) {
         // ── USER sends a message ─────────────────────────────────────
         if (action.type === 'WEB_CHAT/SEND_MESSAGE') {
             const userText = action.payload?.text?.trim();
-            if (userText && pendingFieldRef.current) {
+            const lowerText = userText?.toLowerCase();
+            
+            // Guard: Don't auto-fill if it's just a simple confirmation (Yes/No/Ok)
+            // unless we really want those as values (rare for these fields).
+            const isSimpleConfirmation = ['yes', 'no', 'ok', 'sure', 'y', 'n'].includes(lowerText);
+
+            if (userText && pendingFieldRef.current && !isSimpleConfirmation) {
                 const field = pendingFieldRef.current;
 
                 if (field === 'companySelection') {
@@ -79,6 +85,9 @@ export default function ChatAssistant({ updateMultipleFields }) {
                 activity.text
             ) {
                 const text = activity.text;
+
+                // Reset pending field - we only want to track it if THIS message is a question
+                pendingFieldRef.current = null;
 
                 // ── Parse bot confirmation messages ──────────────────
                 const fieldsFromBot = {};
