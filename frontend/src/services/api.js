@@ -49,7 +49,18 @@ export async function submitForm(formData) {
 
 export async function healthCheck() {
   const response = await fetch(`${API_BASE}/health`);
-  return response.json();
+
+  if (!response.ok) {
+    throw new Error(`Backend error: ${response.status}`);
+  }
+
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("Backend returned non-JSON response");
+  }
 }
 
 export async function login(email, password) {
