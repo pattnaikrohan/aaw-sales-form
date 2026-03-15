@@ -8,18 +8,9 @@ app = FastAPI(title="AAW Group Sales App API", version="1.0.0")
 
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "https://lemon-coast-04dd91300.6.azurestaticapps.net",
-    "https://*.azurestaticapps.net"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

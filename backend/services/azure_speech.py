@@ -58,5 +58,5 @@ async def process_speech(name: str, content_bytes: str) -> dict:
         "status": normalize_field_value("status", extracted.get("status", "")),
         "primarycontact": extracted.get("primaryContact", ""),
         "actualdate": extracted.get("actualDate", ""),
-        "notes": extracted.get("notes", ""),
+        "notes": transcript,
     }
