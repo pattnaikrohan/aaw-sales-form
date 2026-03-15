@@ -1,4 +1,5 @@
 import httpx
+import difflib
 from config import FLOW2_URL
 
 # In-memory cache of all company names
@@ -23,9 +24,6 @@ async def load_company_cache():
                 json={},
                 headers={"Content-Type": "application/json"},
             )
-            response.raise_for_status()
-            data = response.json()
-
             response.raise_for_status()
             data = response.json()
 
@@ -87,3 +85,26 @@ async def search_companies(search_text: str) -> list:
     matches = [c for c in _company_cache if query in c.lower()]
 
     return matches[:10]
+
+
+def fuzzy_match_company(raw_name: str, threshold: float = 0.6) -> str:
+    """Find the closest company name from the cache using fuzzy matching.
+    Returns the exact matched string from the cache, or the original raw_name
+    if no good match is found.
+    """
+    if not _company_cache or not raw_name:
+        return raw_name
+        
+    # get_close_matches returns a list of the best matches
+    matches = difflib.get_close_matches(
+        raw_name, 
+        _company_cache, 
+        n=1, 
+        cutoff=threshold
+    )
+    
+    if matches:
+        print(f"[CompanySearch] Fuzzy matched '{raw_name}' -> '{matches[0]}'")
+        return matches[0]
+        
+    return raw_name
