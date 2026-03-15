@@ -147,6 +147,7 @@ export default function App() {
         isChatOpen && (
           <ChatAssistant
             updateMultipleFields={updateMultipleFields}
+            onClose={() => setIsChatOpen(false)}
           />
         )
       }

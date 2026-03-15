@@ -29,7 +29,7 @@ function parseDateToISO(dateStr) {
     return null;
 }
 
-export default function ChatAssistant({ updateMultipleFields }) {
+export default function ChatAssistant({ updateMultipleFields, onClose }) {
     const { instance, accounts } = useMsal();
     const [directLine, setDirectLine] = useState(null);
     const [error, setError] = useState(null);
@@ -245,6 +245,9 @@ export default function ChatAssistant({ updateMultipleFields }) {
                 <div className="chat-header-text">
                     <h2>AAW Sales Assistant</h2>
                     <span>Powered by AAW AI</span>
+                </div>
+                <div className="chat-close-btn" onClick={onClose} aria-label="Close Chat">
+                    ✕
                 </div>
             </div>
 
