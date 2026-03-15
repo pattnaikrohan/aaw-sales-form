@@ -1545,13 +1545,14 @@ audio::-webkit-media-controls-panel {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 100vh;
+    height: 100dvh; /* Dynamic viewport, adapts to UI chrome */
     width: 100vw;
     z-index: 9000;
     background: var(--bg-deep); /* Ensure solid background */
     border-left: none;
     transform: translateX(100%);
     animation: slideInRightMobile 300ms var(--transition-spring) forwards;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); /* Lifts input box above address area */
   }
   
   body.light-theme .panel-right {
