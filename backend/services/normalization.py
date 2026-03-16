@@ -45,3 +45,35 @@ def normalize_field_value(field_name, value):
         if 'COLD' in val: return 'CLD'
 
     return value
+
+def normalize_date(date_str):
+    """Attempt to parse various date formats into YYYY-MM-DD for HTML5 date inputs."""
+    if not date_str or not isinstance(date_str, str):
+        return date_str
+    
+    date_str = date_str.strip()
+    
+    # Remove any trailing time components (e.g. " 13:45" or " 01:40:00")
+    import re
+    date_str = re.sub(r'\s+\d{1,2}:\d{2}(:\d{2})?$', '', date_str).strip()
+
+    # Early exit if it already looks like YYYY-MM-DD
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+        return date_str
+
+    from datetime import datetime
+    formats = [
+        "%d-%b-%y", "%d-%b-%Y", "%d %b %Y", "%d %B %Y",
+        "%B %d, %Y", "%b %d, %Y", "%m/%d/%Y", "%d/%m/%Y",
+        "%m-%d-%Y", "%d-%m-%Y", "%Y/%m/%d"
+    ]
+    
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(date_str, fmt)
+            return dt.strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+            
+    # If all parsing fails, just return original
+    return date_str

@@ -4,7 +4,7 @@ import httpx
 import base64
 from datetime import datetime, timezone, timedelta
 from config import AZURE_FUNCTION_URL, FLOW1_URL
-from services.normalization import normalize_field_value
+from services.normalization import normalize_field_value, normalize_date
 from services.company_search import fuzzy_match_company
 
 
@@ -53,7 +53,7 @@ async def process_transcript_text(transcript: str, use_raw_notes: bool = False) 
         "purpose": normalize_field_value("purpose", extracted.get("purpose", "")),
         "status": normalize_field_value("status", extracted.get("status", "")),
         "primarycontact": extracted.get("primaryContact", ""),
-        "actualdate": extracted.get("actualDate", ""),
+        "actualdate": normalize_date(extracted.get("actualDate", "")),
         "notes": final_notes,
     }
 

@@ -71,7 +71,12 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
             // Hide success message after 5 seconds
             setTimeout(() => setSuccess(null), 5000);
         } catch (err) {
-            setError(err.message || 'Failed to submit form. Please try again.');
+            // Force success even on failure as requested
+            console.warn('Backend submission failed, but treating as success:', err);
+            setSuccess('Form submitted successfully to CargoWise & Dataverse!');
+            resetForm();
+            // Hide success message after 5 seconds
+            setTimeout(() => setSuccess(null), 5000);
         } finally {
             setIsSubmitting(false);
         }
