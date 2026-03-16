@@ -6,6 +6,7 @@ import { healthCheck } from './services/api';
 
 import SalesForm from './components/SalesForm';
 import VoiceRecorder from './components/VoiceRecorder';
+import TranscriptUploader from './components/TranscriptUploader';
 import ChatAssistant from './components/ChatAssistant';
 import AuthPanel from './components/AuthPanel';
 import './styles/app.css';
@@ -123,16 +124,19 @@ export default function App() {
           </div>
         </header>
 
-        <VoiceRecorder
-          isRecording={voice.isRecording}
-          isProcessing={voice.isProcessing}
-          audioURL={voice.audioURL}
-          recordingTime={voice.recordingTime}
-          error={voice.error}
-          onStart={voice.startRecording}
-          onStop={voice.stopRecording}
-          formatTime={voice.formatTime}
-        />
+        <div className="input-methods">
+          <VoiceRecorder
+            isRecording={voice.isRecording}
+            isProcessing={voice.isProcessing}
+            audioURL={voice.audioURL}
+            recordingTime={voice.recordingTime}
+            error={voice.error}
+            onStart={voice.startRecording}
+            onStop={voice.stopRecording}
+            formatTime={voice.formatTime}
+          />
+          <TranscriptUploader updateMultipleFields={updateMultipleFields} />
+        </div>
 
         <SalesForm
           formData={formData}

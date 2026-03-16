@@ -39,9 +39,13 @@ export async function extractFieldsFromChat(userMessage, botReply, currentFormSt
   return apiCall('/extract-fields', { userMessage, botReply, currentFormState });
 }
 
-export async function processSpeech(name, contentBytes) {
-  return apiCall('/speech', { name, contentBytes });
-}
+export const processSpeech = async (fileName, contentBytes) => {
+    return apiCall('/speech', { name: fileName, contentBytes });
+};
+
+export const processTranscript = async (content) => {
+    return apiCall('/transcript', { content });
+};
 
 export async function submitForm(formData) {
   return apiCall('/submit', formData);

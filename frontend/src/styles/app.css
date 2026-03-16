@@ -596,7 +596,7 @@ body.light-theme .header-user-badge:hover {
 
 /* Voice recorder section */
 .voice-section {
-  margin-bottom: 20px;
+  display: flex; /* Added for correct child alignment */
 }
 
 /* Form grid */
@@ -1708,5 +1708,188 @@ audio::-webkit-media-controls-panel {
 
   .auth-logo {
     height: 48px;
+  }
+}
+
+/* ============================================
+   TRANSCRIPT UPLOADER / INPUT METHODS
+   ============================================ */
+
+.input-methods {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allows wrapping on very small screens */
+  gap: 16px;
+  margin-top: 36px;  /* Adds space between header and buttons */
+  margin-left: 30px; /* Shifts buttons further left (+20px / ~0.5cm) */
+  margin-bottom: 24px;
+}
+
+/* Modal Overlay */
+.transcript-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4); /* Dark backdrop */
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 200ms ease;
+  padding: 20px;
+}
+
+/* Modal Content */
+.transcript-modal-content {
+  background: var(--bg-deep); /* Use solid background instead of glass for readability */
+  border: var(--glass-border);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 540px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  animation: slideUpFade 300ms var(--transition-spring);
+  overflow: hidden;
+}
+
+.transcript-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-glass);
+}
+
+.transcript-modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.transcript-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-base);
+}
+
+.transcript-modal-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.transcript-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.transcript-instruction {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.transcript-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.transcript-upload-btn {
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+.transcript-upload-btn:hover:not(:disabled) {
+  background: var(--bg-glass);
+  border-color: var(--text-muted);
+}
+
+.transcript-divider {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.transcript-textarea {
+  min-height: 200px;
+  resize: vertical;
+  background: var(--bg-glass);
+  color: var(--text-primary);
+}
+
+.transcript-error {
+  margin-top: 0;
+  font-size: 0.9rem;
+}
+
+.transcript-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: var(--bg-glass);
+}
+
+.transcript-cancel-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+}
+
+.transcript-cancel-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.transcript-process-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.transcript-process-btn:hover:not(:disabled) {
+  background: var(--primary-glow);
+  transform: translateY(-1px);
+}
+
+.transcript-process-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mobile Fullscreen Modal */
+@media (max-width: 600px) {
+  .transcript-modal-overlay {
+    padding: 0;
+  }
+  
+  .transcript-modal-content {
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+    padding-bottom: env(safe-area-inset-bottom, 0px); /* Keep footer above mobile nav bars */
+  }
+
+  .transcript-modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  
+  .transcript-textarea {
+    flex-grow: 1;
+    min-height: auto; /* Let flexbox control height */
   }
 }

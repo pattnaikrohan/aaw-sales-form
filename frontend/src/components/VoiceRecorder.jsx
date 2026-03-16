@@ -49,7 +49,7 @@ export default function VoiceRecorder({
                         {isRecording
                             ? 'Speak naturally'
                             : isProcessing
-                                ? 'Processing with Azure AI'
+                                ? 'Processing with AAW AI'
                                 : 'Click mic to start'}
                     </span>
                 </div>

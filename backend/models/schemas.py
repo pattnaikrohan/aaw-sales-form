@@ -73,3 +73,6 @@ class SubmitRequest(BaseModel):
 class SubmitResponse(BaseModel):
     status: str
     message: str
+
+class TranscriptRequest(BaseModel):
+    content: str
