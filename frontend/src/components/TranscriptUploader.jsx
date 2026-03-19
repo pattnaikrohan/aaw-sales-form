@@ -109,7 +109,7 @@ export default function TranscriptUploader({ updateMultipleFields }) {
                         {isProcessing ? 'Analyzing transcript...' : 'Upload Teams Transcript'}
                     </span>
                     <span className="voice-status-sub">
-                        {isProcessing ? 'Processing with Azure AI' : 'Click to upload'}
+                        {isProcessing ? 'Processing with AAW AI' : 'Click to upload'}
                     </span>
                 </div>
             </div>

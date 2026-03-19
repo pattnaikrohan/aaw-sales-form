@@ -143,6 +143,7 @@ export default function App() {
           updateField={updateField}
           resetForm={resetForm}
           autoFilledFields={autoFilledFields}
+          currentUser={currentUser}
         />
       </div >
 

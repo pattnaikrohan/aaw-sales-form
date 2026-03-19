@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CompanyDropdown from './CompanyDropdown';
 import { submitForm } from '../services/api';
 
-export default function SalesForm({ formData, updateField, resetForm, autoFilledFields }) {
+export default function SalesForm({ formData, updateField, resetForm, autoFilledFields, currentUser }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -65,7 +65,12 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
 
         setIsSubmitting(true);
         try {
-            const result = await submitForm(formData);
+            // Ensure submittedBy is passed as the current logged-in user if not already set
+            const submissionData = {
+                ...formData,
+                submittedBy: formData.submittedBy || currentUser || 'AAW User'
+            };
+            const result = await submitForm(submissionData);
             setSuccess(result.message || 'Form submitted successfully to CargoWise & Dataverse!');
             resetForm();
             // Hide success message after 5 seconds
