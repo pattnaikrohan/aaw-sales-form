@@ -1,17 +1,20 @@
 import httpx
 import difflib
+import time
 from config import FLOW2_URL
 
 # In-memory cache of all company names and codes
 _company_cache: list[dict] = []
 _cache_loaded = False
+_last_load_time = 0.0
+_CACHE_TTL = 3600  # 1 hour in seconds
 
 
 async def load_company_cache():
     """Load all company names and codes from Dataverse via Power Automate flow.
-    Called once on startup.
+    Called on startup and periodically.
     """
-    global _company_cache, _cache_loaded
+    global _company_cache, _cache_loaded, _last_load_time
 
     if not FLOW2_URL or FLOW2_URL.startswith("<"):
         print("[CompanySearch] FLOW2_URL not configured, skipping cache load")
@@ -75,6 +78,7 @@ async def load_company_cache():
 
             _company_cache = new_cache
             _cache_loaded = True
+            _last_load_time = time.time()
             print(f"[CompanySearch] Loaded {len(_company_cache)} company records into cache")
 
     except Exception as e:
@@ -84,7 +88,8 @@ async def load_company_cache():
 
 async def search_companies(search_text: str) -> list[str]:
     """Search cached company names. Returns up to 10 matching names."""
-    if not _cache_loaded:
+    # Reload if not loaded or if TTL expired
+    if not _cache_loaded or (time.time() - _last_load_time > _CACHE_TTL):
         await load_company_cache()
 
     if not search_text or len(search_text) < 2:

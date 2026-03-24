@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models.schemas import CompanySearchRequest, CompanySearchResponse
-from services.company_search import search_companies
+from services.company_search import search_companies, load_company_cache
 
 router = APIRouter()
 
@@ -13,3 +13,13 @@ async def company_search(request: CompanySearchRequest):
         return CompanySearchResponse(companies=companies)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Company search failed: {str(e)}")
+
+
+@router.post("/refresh")
+async def refresh_companies():
+    """Manually trigger a reload of the company cache from FLOW2_URL."""
+    try:
+        await load_company_cache()
+        return {"message": "Company cache refreshed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to refresh company cache: {str(e)}")
