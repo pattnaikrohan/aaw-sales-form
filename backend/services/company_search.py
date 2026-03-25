@@ -1,7 +1,12 @@
 import httpx
 import difflib
 import time
+import json
+import os
 from config import FLOW2_URL
+
+# Path for persistent cache
+CACHE_FILE = os.path.join(os.path.dirname(__file__), "..", "company_cache.json")
 
 # In-memory cache of all company names and codes
 _company_cache: list[dict] = []
@@ -10,11 +15,45 @@ _last_load_time = 0.0
 _CACHE_TTL = 3600  # 1 hour in seconds
 
 
+def _load_from_file():
+    """Load company data from local JSON file if it exists."""
+    global _company_cache, _cache_loaded, _last_load_time
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    _company_cache = data
+                    _cache_loaded = True
+                    # Set last load time to 0 to trigger a refresh in background if needed, 
+                    # but we have data now.
+                    _last_load_time = os.path.getmtime(CACHE_FILE)
+                    print(f"[CompanySearch] Loaded {len(_company_cache)} records from local cache file")
+                    return True
+        except Exception as e:
+            print(f"[CompanySearch] Failed to read cache file: {e}")
+    return False
+
+
+def _save_to_file(data):
+    """Save company data to local JSON file."""
+    try:
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"[CompanySearch] Saved {len(data)} records to local cache file")
+    except Exception as e:
+        print(f"[CompanySearch] Failed to save cache file: {e}")
+
+
 async def load_company_cache():
     """Load all company names and codes from Dataverse via Power Automate flow.
     Called on startup and periodically.
     """
     global _company_cache, _cache_loaded, _last_load_time
+
+    # Try local file first if not already loaded
+    if not _cache_loaded:
+        _load_from_file()
 
     if not FLOW2_URL or FLOW2_URL.startswith("<"):
         print("[CompanySearch] FLOW2_URL not configured, skipping cache load")
@@ -79,7 +118,10 @@ async def load_company_cache():
             _company_cache = new_cache
             _cache_loaded = True
             _last_load_time = time.time()
-            print(f"[CompanySearch] Loaded {len(_company_cache)} company records into cache")
+            print(f"[CompanySearch] Loaded {len(_company_cache)} company records from Flow")
+            
+            # Persist to disk
+            _save_to_file(_company_cache)
 
     except Exception as e:
         print(f"[CompanySearch] Failed to load company cache: {e}")

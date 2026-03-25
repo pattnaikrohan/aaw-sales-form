@@ -52,19 +52,10 @@ export default function useVoice(updateMultipleFields) {
 
                     const result = await processSpeech('speech.webm', contentBytes);
 
-                    // Map response fields to formData fields
-                    const fieldMap = {};
-                    if (result.clientname) fieldMap.clientName = result.clientname;
-                    if (result.subject) fieldMap.subject = result.subject;
-                    if (result.method) fieldMap.method = result.method;
-                    if (result.purpose) fieldMap.purpose = result.purpose;
-                    if (result.status) fieldMap.status = result.status;
-                    if (result.primarycontact) fieldMap.primaryContact = result.primarycontact;
-                    if (result.actualdate) fieldMap.actualDate = result.actualdate;
-                    if (result.notes) fieldMap.notes = result.notes;
-
-                    if (Object.keys(fieldMap).length > 0) {
-                        updateMultipleFields(fieldMap);
+                    // The backend now returns camelCase keys that match our form state
+                    // (clientName, primaryContact, etc.)
+                    if (result && typeof result === 'object') {
+                        updateMultipleFields(result);
                     }
                 } catch (err) {
                     setError(`Voice processing failed: ${err.message}`);

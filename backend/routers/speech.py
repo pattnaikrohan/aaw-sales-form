@@ -12,13 +12,13 @@ async def speech_to_text(request: SpeechRequest):
         result = await process_speech(request.name, request.contentBytes)
         return SpeechResponse(
             transcript=result.get("transcript", ""),
-            clientname=result.get("clientname", ""),
+            clientName=result.get("clientName", ""),
             subject=result.get("subject", ""),
             method=result.get("method", ""),
             purpose=result.get("purpose", ""),
             status=result.get("status", ""),
-            primarycontact=result.get("primarycontact", ""),
-            actualdate=result.get("actualdate", ""),
+            primaryContact=result.get("primaryContact", ""),
+            actualDate=result.get("actualDate", ""),
             notes=result.get("notes", ""),
         )
     except Exception as e:
@@ -32,13 +32,13 @@ async def process_transcript(request: TranscriptRequest):
         result = await process_transcript_text(request.content)
         return SpeechResponse(
             transcript=result.get("transcript", ""),
-            clientname=result.get("clientname", ""),
+            clientName=result.get("clientName", ""),
             subject=result.get("subject", ""),
             method=result.get("method", ""),
             purpose=result.get("purpose", ""),
             status=result.get("status", ""),
-            primarycontact=result.get("primarycontact", ""),
-            actualdate=result.get("actualdate", ""),
+            primaryContact=result.get("primaryContact", ""),
+            actualDate=result.get("actualDate", ""),
             notes=result.get("notes", ""),
         )
     except Exception as e:

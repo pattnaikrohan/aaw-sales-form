@@ -40,16 +40,9 @@ export default function TranscriptUploader({ updateMultipleFields }) {
             const result = await processTranscript(textToProcess);
 
             // Update all fields with the AI response
-            updateMultipleFields({
-                clientName: result.clientname || '',
-                subject: result.subject || '',
-                method: result.method || '',
-                purpose: result.purpose || '',
-                status: result.status || '',
-                primaryContact: result.primarycontact || '',
-                actualDate: result.actualdate || '',
-                notes: result.notes || '', // Replaces the 'Analyzing...' text
-            });
+            if (result && typeof result === 'object') {
+                updateMultipleFields(result);
+            }
 
         } catch (err) {
             console.error('Transcript processing failed:', err);

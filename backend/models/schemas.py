@@ -26,13 +26,13 @@ class SpeechRequest(BaseModel):
     
 class SpeechResponse(BaseModel):
     transcript: str = ""
-    clientname: str = ""
+    clientName: str = ""
     subject: str = ""
     method: str = ""
     purpose: str = ""
     status: str = ""
-    primarycontact: str = ""
-    actualdate: str = ""
+    primaryContact: str = ""
+    actualDate: str = ""
     notes: str = ""
 
 class ChatRequest(BaseModel):

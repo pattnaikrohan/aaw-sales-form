@@ -33,6 +33,7 @@ async def process_transcript_text(transcript: str, use_raw_notes: bool = False) 
                 # Don't raise, just fall back to empty fields
             else:
                 extracted = flow_response.json()
+                print(f"[Speech] AI Builder extracted fields: {extracted}")
     except Exception as e:
         print(f"[Speech] Failed to extract fields via AI Builder: {e}")
         # Proceed with empty extracted fields, but we still have the transcript
@@ -44,16 +45,16 @@ async def process_transcript_text(transcript: str, use_raw_notes: bool = False) 
     # Decide what goes into the notes field
     final_notes = transcript if use_raw_notes else extracted.get("notes", "")
 
-    # Return merged result with normalized field values
+    # Return merged result with normalized field values (CAMEL CASE for frontend)
     return {
         "transcript": transcript,
-        "clientname": best_client_name,
+        "clientName": best_client_name,
         "subject": extracted.get("subject", ""),
         "method": normalize_field_value("method", extracted.get("method", "")),
         "purpose": normalize_field_value("purpose", extracted.get("purpose", "")),
         "status": normalize_field_value("status", extracted.get("status", "")),
-        "primarycontact": extracted.get("primaryContact", ""),
-        "actualdate": normalize_date(extracted.get("actualDate", "")),
+        "primaryContact": extracted.get("primaryContact", ""),
+        "actualDate": normalize_date(extracted.get("actualDate", "")),
         "notes": final_notes,
     }
 
