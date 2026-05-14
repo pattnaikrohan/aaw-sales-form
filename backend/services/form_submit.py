@@ -2,6 +2,7 @@ import httpx
 from datetime import datetime
 from config import CARGOWISE_URL
 from services.company_search import get_company_code
+from services.azure_logger import log_failed_submission
 
 
 async def submit_form(form_data: dict) -> dict:
@@ -51,8 +52,10 @@ async def submit_form(form_data: dict) -> dict:
                 "raw_response": resp_text
             }
         except Exception as e:
-            print(f"[FormSubmit] Error during submission: {str(e)}")
+            error_msg = str(e)
+            print(f"[FormSubmit] Error during submission: {error_msg}")
+            await log_failed_submission(payload, error_msg)
             return {
                 "status": "error",
-                "message": f"Failed to submit to CargoWise flow: {str(e)}"
+                "message": f"Failed to submit to CargoWise flow: {error_msg}"
             }
