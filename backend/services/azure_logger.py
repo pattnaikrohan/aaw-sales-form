@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from azure.storage.blob import AppendBlobClient
+from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ResourceNotFoundError
 from config import (
     AZURE_STORAGE_ACCOUNT_NAME, 
@@ -22,9 +22,8 @@ async def log_failed_submission(payload: dict, error_message: str):
         timestamp_str = now.strftime("%Y-%m-%dT%H:%M:%S")
         blob_name = f"{AZURE_STORAGE_BLOB_PREFIX}_{month_str}.txt"
         
-        blob_url = f"{account_url}/{AZURE_STORAGE_CONTAINER}/{blob_name}?{AZURE_STORAGE_SAS_TOKEN}"
-        
-        client = AppendBlobClient.from_blob_url(blob_url)
+        blob_service_client = BlobServiceClient(account_url=account_url, credential=AZURE_STORAGE_SAS_TOKEN)
+        blob_client = blob_service_client.get_blob_client(container=AZURE_STORAGE_CONTAINER, blob=blob_name)
         
         log_entry = (
             f"\n{'='*50}\n"
@@ -35,11 +34,11 @@ async def log_failed_submission(payload: dict, error_message: str):
         )
         
         try:
-            client.append_block(log_entry)
+            blob_client.append_block(log_entry)
         except ResourceNotFoundError:
-            # If the blob doesn't exist, create it and then append
-            client.create_append_blob()
-            client.append_block(log_entry)
+            # If the blob doesn't exist, create it as an append blob and then append
+            blob_client.create_append_blob()
+            blob_client.append_block(log_entry)
             
         print(f"[AzureLogger] Successfully logged failure to {blob_name}")
         

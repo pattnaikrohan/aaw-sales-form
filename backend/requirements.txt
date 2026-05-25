@@ -7,4 +7,4 @@ python-dotenv
 pydantic
 python-jose[cryptography]
 passlib[bcrypt]
-azure-storage-blob
+azure-storage-blob>=12.19.0
