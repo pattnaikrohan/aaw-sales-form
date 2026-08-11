@@ -76,25 +76,3 @@ class SubmitResponse(BaseModel):
 
 class TranscriptRequest(BaseModel):
     content: str
-
-class ValidateClientContactRequest(BaseModel):
-    clientName: str
-    primaryContact: str
-
-class ValidateClientContactResponse(BaseModel):
-    valid: bool
-    message: str
-    ohPk: Optional[str] = None
-    ocPk: Optional[str] = None
-
-class ContactSearchRequest(BaseModel):
-    clientName: str
-
-class ContactSearchResponse(BaseModel):
-    contacts: list
-
-class OrgSearchRequest(BaseModel):
-    searchText: str
-
-class OrgSearchResponse(BaseModel):
-    organisations: list

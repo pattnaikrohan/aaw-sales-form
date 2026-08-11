@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import speech, chat, company, submit, auth, extract_fields, validate
+from routers import speech, chat, company, submit, auth, extract_fields
 from services.company_search import load_company_cache
 
 app = FastAPI(title="AAW Group Sales App API", version="1.0.0")
@@ -25,7 +25,6 @@ app.include_router(company.router, prefix="/api", tags=["Company"])
 app.include_router(submit.router, prefix="/api", tags=["Submit"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(extract_fields.router, prefix="/api", tags=["Extract"])
-app.include_router(validate.router, prefix="/api", tags=["Validate"])
 
 
 @app.on_event("startup")

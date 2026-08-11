@@ -17,12 +17,3 @@ AZURE_STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME", "aawaidata"
 AZURE_STORAGE_SAS_TOKEN = os.getenv("AZURE_STORAGE_SAS_TOKEN", "sv=2025-11-05&ss=bfqt&srt=co&sp=rwdlacupiytfx&se=2041-05-14T07:52:14Z&st=2026-05-13T23:37:14Z&spr=https&sig=RASN%2BtHGt7E19xi2UdAEGJbWoPjuaLIkkG64Im5zTSI%3D")
 AZURE_STORAGE_CONTAINER = os.getenv("AZURE_STORAGE_CONTAINER", "sales-form-logs")
 AZURE_STORAGE_BLOB_PREFIX = os.getenv("AZURE_STORAGE_BLOB_PREFIX", "failed_logs")
-
-# Snowflake configuration
-SF_ACCOUNT = os.getenv("SF_ACCOUNT", "")
-SF_USER = os.getenv("SF_USER", "")
-SF_ROLE = os.getenv("SF_ROLE", "")
-SF_WAREHOUSE = os.getenv("SF_WAREHOUSE", "")
-SF_DATABASE = os.getenv("SF_DATABASE", "")
-SF_SCHEMA = os.getenv("SF_SCHEMA", "")
-SF_PRIVATE_KEY_PATH = os.getenv("SF_PRIVATE_KEY_PATH", "")

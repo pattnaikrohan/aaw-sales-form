@@ -27,16 +27,8 @@ async function apiCall(endpoint, data) {
   return response.json();
 }
 
-export async function searchOrganisations(searchText) {
-  return apiCall('/search-organisations', { searchText });
-}
-
-export async function searchContacts(clientName) {
-  return apiCall('/search-contacts', { clientName });
-}
-
-export async function validateClientContact(clientName, primaryContact) {
-  return apiCall('/validate-client-contact', { clientName, primaryContact });
+export async function searchCompany(companySearchText) {
+  return apiCall('/company-search', { companySearchText });
 }
 
 export async function sendChatMessage(message, conversationHistory, currentFormState) {
