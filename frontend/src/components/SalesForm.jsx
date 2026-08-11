@@ -239,7 +239,7 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                     )}
                 </div>
 
-                <div className="form-group full-width" style={{ position: 'relative' }}>
+                <div className="form-group" style={{ position: 'relative' }}>
                     <label className="form-label">Primary Contact</label>
                     <input
                         type="text"
