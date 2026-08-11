@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import CompanyDropdown from './CompanyDropdown';
-import { submitForm } from '../services/api';
+import AutocompleteDropdown from './AutocompleteDropdown';
+import { submitForm, searchOrganisations, searchContacts, validateClientContact } from '../services/api';
 
 export default function SalesForm({ formData, updateField, resetForm, autoFilledFields, currentUser }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -8,7 +8,9 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
     const [success, setSuccess] = useState(null);
     const [validationErrors, setValidationErrors] = useState(new Set());
     const [searchQuery, setSearchQuery] = useState('');
+    const [contactSearchQuery, setContactSearchQuery] = useState('');
     const ignoreNextSearchRef = React.useRef(false);
+    const ignoreNextContactSearchRef = React.useRef(false);
 
     // Synchronize search dropdown with clientName changes
     React.useEffect(() => {
@@ -24,12 +26,29 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
         }
     }, [formData.clientName]);
 
+    // Synchronize contact search dropdown with primaryContact changes
+    React.useEffect(() => {
+        if (ignoreNextContactSearchRef.current) {
+            ignoreNextContactSearchRef.current = false;
+            return;
+        }
+
+        if (formData.primaryContact && formData.primaryContact.length >= 2) {
+            setContactSearchQuery(formData.primaryContact);
+        } else {
+            setContactSearchQuery('');
+        }
+    }, [formData.primaryContact]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         
         if (name === 'clientName') {
             // Typing clears any 'ignored' state
             ignoreNextSearchRef.current = false;
+        }
+        if (name === 'primaryContact') {
+            ignoreNextContactSearchRef.current = false;
         }
 
         updateField(name, value);
@@ -65,6 +84,16 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
 
         setIsSubmitting(true);
         try {
+            // Validate client and contact pair against database
+            if (formData.clientName && formData.primaryContact) {
+                const validationResult = await validateClientContact(formData.clientName, formData.primaryContact);
+                if (!validationResult.valid) {
+                    setError(validationResult.message);
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
             // Ensure submittedBy is passed as the current logged-in user if not already set
             const submissionData = {
                 ...formData,
@@ -125,8 +154,12 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                         className={getClass('clientName')}
                         autoComplete="off"
                     />
-                    <CompanyDropdown
+                    <AutocompleteDropdown
                         searchText={searchQuery}
+                        fetchOptions={async (text) => {
+                            const res = await searchOrganisations(text);
+                            return res.organisations;
+                        }}
                         onSelect={(name) => {
                             ignoreNextSearchRef.current = true;
                             setSearchQuery('');
@@ -228,6 +261,23 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                         onChange={handleChange}
                         placeholder="Contact name"
                         className={getClass('primaryContact')}
+                        autoComplete="off"
+                    />
+                    <AutocompleteDropdown
+                        searchText={contactSearchQuery}
+                        disabled={!formData.clientName}
+                        fetchOptions={async (text) => {
+                            if (!formData.clientName) return [];
+                            const res = await searchContacts(formData.clientName);
+                            return (res.contacts || []).filter(c => 
+                                c.toLowerCase().includes(text.toLowerCase())
+                            );
+                        }}
+                        onSelect={(name) => {
+                            ignoreNextContactSearchRef.current = true;
+                            setContactSearchQuery('');
+                            updateField('primaryContact', name);
+                        }}
                     />
                 </div>
 

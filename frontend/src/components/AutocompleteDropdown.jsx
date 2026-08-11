@@ -1,25 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
-import { searchCompany } from '../services/api';
 
-export default function CompanyDropdown({ searchText, onSelect }) {
+export default function AutocompleteDropdown({ searchText, onSelect, fetchOptions, placeholder = "Search...", disabled = false }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [companies, setCompanies] = useState([]);
+    const [options, setOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [manuallyClosed, setManuallyClosed] = useState(false);
     const debounceRef = useRef(null);
     const lastSearchRef = useRef('');
 
     useEffect(() => {
+        if (disabled) {
+            setIsOpen(false);
+            return;
+        }
+
         // Reset manually closed state if text changes or is cleared
         if (searchText !== lastSearchRef.current) {
             setManuallyClosed(false);
             lastSearchRef.current = searchText;
         }
 
-        // Only search if length > 2
+        // Only search if length >= 2
         if (!searchText || searchText.length < 2 || manuallyClosed) {
             setIsOpen(false);
-            setCompanies([]);
+            setOptions([]);
             return;
         }
 
@@ -31,18 +35,19 @@ export default function CompanyDropdown({ searchText, onSelect }) {
             setIsLoading(true);
             setIsOpen(true);
             try {
-                const result = await searchCompany(searchText);
-                setCompanies(result.companies || []);
+                const result = await fetchOptions(searchText);
+                // Assume result is an array of strings
+                setOptions(result || []);
             } catch (err) {
-                console.error('Company search failed:', err);
-                setCompanies([]);
+                console.error('Search failed:', err);
+                setOptions([]);
             } finally {
                 setIsLoading(false);
             }
         }, 300);
 
         return () => clearTimeout(debounceRef.current);
-    }, [searchText, manuallyClosed]);
+    }, [searchText, manuallyClosed, fetchOptions, disabled]);
 
     if (!isOpen) return null;
 
@@ -66,19 +71,18 @@ export default function CompanyDropdown({ searchText, onSelect }) {
                         <span className="spinner spinner-sm"></span>
                         Searching...
                     </div>
-                ) : companies.length > 0 ? (
+                ) : options.length > 0 ? (
                     <div className="company-dropdown-list">
-                        {companies.map((company, i) => (
+                        {options.map((option, i) => (
                             <div
                                 key={i}
                                 className="company-dropdown-item"
                                 onClick={() => {
-                                    onSelect(company);
+                                    onSelect(option);
                                     setIsOpen(false);
                                 }}
                             >
-                                <span className="icon">🏢</span>
-                                {company}
+                                {option}
                             </div>
                         ))}
                     </div>
