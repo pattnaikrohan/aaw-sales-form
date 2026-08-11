@@ -31,6 +31,10 @@ export async function searchCompany(companySearchText) {
   return apiCall('/company-search', { companySearchText });
 }
 
+export async function searchContact(contactName, clientName) {
+  return apiCall('/contact-search', { contactName, clientName });
+}
+
 export async function sendChatMessage(message, conversationHistory, currentFormState) {
   return apiCall('/chat', { message, conversationHistory, currentFormState });
 }

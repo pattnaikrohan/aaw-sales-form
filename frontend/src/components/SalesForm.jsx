@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CompanyDropdown from './CompanyDropdown';
+import ContactDropdown from './ContactDropdown';
 import { submitForm } from '../services/api';
 
 export default function SalesForm({ formData, updateField, resetForm, autoFilledFields, currentUser }) {
@@ -8,7 +9,9 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
     const [success, setSuccess] = useState(null);
     const [validationErrors, setValidationErrors] = useState(new Set());
     const [searchQuery, setSearchQuery] = useState('');
+    const [contactSearchQuery, setContactSearchQuery] = useState('');
     const ignoreNextSearchRef = React.useRef(false);
+    const ignoreNextContactSearchRef = React.useRef(false);
 
     // Synchronize search dropdown with clientName changes
     React.useEffect(() => {
@@ -24,12 +27,29 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
         }
     }, [formData.clientName]);
 
+    // Synchronize contact search dropdown with primaryContact changes
+    React.useEffect(() => {
+        if (ignoreNextContactSearchRef.current) {
+            ignoreNextContactSearchRef.current = false;
+            return;
+        }
+
+        if (formData.primaryContact && formData.primaryContact.length >= 2) {
+            setContactSearchQuery(formData.primaryContact);
+        } else {
+            setContactSearchQuery('');
+        }
+    }, [formData.primaryContact]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         
         if (name === 'clientName') {
             // Typing clears any 'ignored' state
             ignoreNextSearchRef.current = false;
+        }
+        if (name === 'primaryContact') {
+            ignoreNextContactSearchRef.current = false;
         }
 
         updateField(name, value);
@@ -219,7 +239,7 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                     )}
                 </div>
 
-                <div className="form-group">
+                <div className="form-group full-width" style={{ position: 'relative' }}>
                     <label className="form-label">Primary Contact</label>
                     <input
                         type="text"
@@ -228,6 +248,16 @@ export default function SalesForm({ formData, updateField, resetForm, autoFilled
                         onChange={handleChange}
                         placeholder="Contact name"
                         className={getClass('primaryContact')}
+                        autoComplete="off"
+                    />
+                    <ContactDropdown
+                        searchText={contactSearchQuery}
+                        clientName={formData.clientName}
+                        onSelect={(name) => {
+                            ignoreNextContactSearchRef.current = true;
+                            setContactSearchQuery('');
+                            updateField('primaryContact', name);
+                        }}
                     />
                 </div>
 

@@ -58,6 +58,13 @@ class CompanySearchRequest(BaseModel):
 class CompanySearchResponse(BaseModel):
     companies: list
 
+class ContactSearchRequest(BaseModel):
+    contactName: str
+    clientName: str
+    
+class ContactSearchResponse(BaseModel):
+    contacts: list
+
 class SubmitRequest(BaseModel):
     clientName: Optional[str] = ""
     subject: Optional[str] = ""
